@@ -1,26 +1,31 @@
 [gd_scene format=3 uid="uid://gjv1pk2ahmub"]
 
 [ext_resource type="Script" uid="uid://xfo0mmftgrdr" path="res://Scripts/enemy.gd" id="1_1f0kj"]
-[ext_resource type="Texture2D" uid="uid://bfrdnwelhd2sa" path="res://Assets/Sprites/icon.svg" id="1_hghv2"]
+[ext_resource type="Texture2D" uid="uid://drb5mprr3j4xo" path="res://Assets/Sprites/image-removebg-preview.png" id="2_1dp5w"]
 [ext_resource type="Script" uid="uid://cpvoxllmpt22a" path="res://Scripts/StateHandler/state_machine.gd" id="3_afpow"]
 [ext_resource type="Script" uid="uid://b8ja66y8wcvq0" path="res://Scripts/StateHandler/States/idle.gd" id="4_287tu"]
 [ext_resource type="Script" uid="uid://cvkevp0jnlfrs" path="res://Scripts/StateHandler/States/scouting.gd" id="5_0830c"]
 [ext_resource type="Script" uid="uid://bgpqyud5yusvu" path="res://Scripts/StateHandler/States/chasing.gd" id="6_ghaa6"]
+[ext_resource type="Script" uid="uid://bnlnhqqugdwnf" path="res://Scenes/area_shape.gd" id="7_1dp5w"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_1f0kj"]
-size = Vector2(128, 128)
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_287tu"]
-radius = 202.00247
+[sub_resource type="CircleShape2D" id="CircleShape2D_auwsv"]
+radius = 50.0
 
 [node name="Enemy" type="CharacterBody2D" unique_id=1238003787]
+z_index = 100
+scale = Vector2(0.5, 0.5)
 script = ExtResource("1_1f0kj")
+walk_speed = 100
+chase_speed = 300
+health = 50
+damage = 10
 
 [node name="Body" type="Sprite2D" parent="." unique_id=1797597023]
-texture = ExtResource("1_hghv2")
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_1dp5w")
 
 [node name="Hitbox" type="CollisionShape2D" parent="." unique_id=610370037]
-shape = SubResource("RectangleShape2D_1f0kj")
+shape = SubResource("CircleShape2D_auwsv")
 debug_color = Color(0.10214708, 0.5132731, 2.8878452e-07, 0.41960785)
 
 [node name="State Machine" type="Node" parent="." unique_id=1612006749 node_paths=PackedStringArray("initial_state")]
@@ -41,15 +46,32 @@ script = ExtResource("6_ghaa6")
 [node name="Death" type="Node" parent="State Machine" unique_id=1899991125]
 
 [node name="Vision Area" type="Area2D" parent="." unique_id=1153898109]
+z_index = 101
+position = Vector2(50, 0)
 
-[node name="Area Shape" type="CollisionShape2D" parent="Vision Area" unique_id=523860738]
-shape = SubResource("CircleShape2D_287tu")
+[node name="Area Shape" type="CollisionPolygon2D" parent="Vision Area" unique_id=1434018022]
+z_index = 102
+rotation = 0.0011635227
+polygon = PackedVector2Array(-2, -2, 356, 106, 384, 66, 396, 30, 398, -12, 390, -40, 376, -66, 352, -94)
+script = ExtResource("7_1dp5w")
 
-[node name="Scouting Timer" type="Timer" parent="." unique_id=344245238]
+[node name="Timers" type="Node" parent="." unique_id=1063946102]
+
+[node name="Scouting Timer" type="Timer" parent="Timers" unique_id=344245238]
 one_shot = true
 
-[node name="Chasing Timer" type="Timer" parent="." unique_id=1786984131]
+[node name="Chasing Timer" type="Timer" parent="Timers" unique_id=1786984131]
+wait_time = 5.0
+one_shot = true
+
+[node name="Attack Timer" type="Timer" parent="Timers" unique_id=1589863811]
+
+[node name="Idle Timer" type="Timer" parent="Timers" unique_id=1644098127]
+wait_time = 1.0999999999999999
+one_shot = true
 
 [connection signal="mouse_entered" from="Vision Area" to="." method="_on_vision_area_mouse_entered"]
 [connection signal="mouse_exited" from="Vision Area" to="." method="_on_vision_area_mouse_exited"]
-[connection signal="timeout" from="Scouting Timer" to="State Machine/Scouting" method="_on_scouting_timer_timeout"]
+[connection signal="timeout" from="Timers/Scouting Timer" to="State Machine/Scouting" method="_on_scouting_timer_timeout"]
+[connection signal="timeout" from="Timers/Chasing Timer" to="." method="_on_chasing_timer_timeout"]
+[connection signal="timeout" from="Timers/Idle Timer" to="State Machine/Idle" method="_on_idle_timer_timeout"]

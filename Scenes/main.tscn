@@ -1,8 +1,13 @@
 [gd_scene format=3 uid="uid://c6bvbhunxfi51"]
 
 [ext_resource type="PackedScene" uid="uid://gjv1pk2ahmub" path="res://Scenes/enemy.tscn" id="1_jjgbg"]
+[ext_resource type="PackedScene" uid="uid://cgxstqn0ril7i" path="res://Scenes/scouting_area.tscn" id="2_bo1nx"]
 
 [node name="Main" type="Node2D" unique_id=901505579]
 
+[node name="Scouting Area" parent="." unique_id=1973781866 instance=ExtResource("2_bo1nx")]
+position = Vector2(957, 515)
+scale = Vector2(97.64348, 53.034653)
+
 [node name="Enemy" parent="." unique_id=1238003787 instance=ExtResource("1_jjgbg")]
-position = Vector2(584, 305)
+position = Vector2(992, 525)
